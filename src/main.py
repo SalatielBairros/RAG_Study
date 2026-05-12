@@ -5,7 +5,6 @@ from dotenv import load_dotenv, find_dotenv
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_core.documents import Document
-from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
 from langchain_classic.retrievers import EnsembleRetriever
@@ -17,7 +16,7 @@ from google import genai
 from langchain_core.messages.tool import ToolMessage
 from langchain_core.messages import HumanMessage
 from langchain_core.messages.ai import AIMessage
-from langchain_ollama import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings, ChatOllama
 import nltk
 import ssl
 from typing import Any
@@ -151,7 +150,7 @@ def get_filenames() -> list[str]:
     directory = "data/salatiel_classes/"
     return [filename for filename in os.listdir(directory) if filename.endswith(".pdf")]
 
-def agent():
+def agent(local_model: bool = True, temperature: float = 0.1):
     system_prompt = (
         "Você é um assistente de pesquisa especializado em fornecer informações relevantes com base em documentos de manuscritos de aulas da Escola Bíblica da Igreja Batista Conde. "
         "A resposta deve ser formatada como Markdown, utilizando os recursos de formatação disponíveis para organizar as informações de maneira clara e legível."
@@ -164,10 +163,18 @@ def agent():
         "Caso alguma tool ou parâmetro tenha feito falta para obter mais dados, acrescente ao final da resposta uma seção chamada 'Limitações' e explique o que faltou para obter uma resposta mais completa."
     )
     tools = [retrieve_context, get_filenames]
-    llm = ChatGoogleGenerativeAI(
-        model="models/gemini-2.5-flash",
-        temperature=0.2
-    )
+
+    if(local_model):
+        llm = ChatOllama(
+            model="gemma4:e4b",
+            temperature=temperature,
+            reasoning=True
+        )
+    else:
+        llm = ChatGoogleGenerativeAI(
+            model="models/gemini-2.5-flash",
+            temperature=temperature
+        )
 
     return create_agent(model=llm, tools=tools, system_prompt=system_prompt, checkpointer=MemorySaver())
 
