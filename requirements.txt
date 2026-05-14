@@ -15,3 +15,6 @@ google-genai
 nltk
 langchain-ollama
 rich
+docling
+pymupdf
+pymupdf4llm

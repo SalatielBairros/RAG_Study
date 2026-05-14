@@ -8,10 +8,9 @@ Material baseado nos cursos da Alura, mas não idêntico ao dos cursos. O objeti
 
 1. Langchain
 
-### Modelos 
+## TODO
 
-1. `gemini-3-pro-preview`
-
-### Serviços
-
-1. [Pinecone](https://www.pinecone.io)
+- [ ] Melhorar leitura dos PDFs, transformando em Markdown, ignorando Sumário e tratando notas de rodapé
+- [ ] Enriquecer os dados com metadados
+- [ ] Tratamento prévio dos PDFs que chegam na pasta
+- [ ] Novas tools para facilitarem a obtenção de dados por modelos menores

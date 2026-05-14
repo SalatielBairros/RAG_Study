@@ -42,7 +42,7 @@ class PdfRagService:
         self.chroma_collection_name = chroma_collection_name
 
         if embeddings_model is None:
-            self.embeddings_model = OllamaEmbeddings(model="nomic-embed-text:latest")
+            self.embeddings_model = OllamaEmbeddings(model="bge-m3:latest")
         else:
             self.embeddings_model = embeddings_model
 
@@ -51,14 +51,17 @@ class PdfRagService:
         self.k = k
 
     def __load_pdfs__(self) -> list[Document]:
-        loader = PyPDFDirectoryLoader(self.pdf_directory)
+        loader = PyPDFDirectoryLoader(
+            self.pdf_directory,
+            mode="single")
         documents = loader.load()
         logging.info(f"Loaded {len(documents)} documents from PDFs.")
         return documents
     
     def __split_documents_texts__(self, documents: list[Document]) -> list[Document]:
         logging.info("Splitting documents into chunks...")
-        text_splitter = RecursiveCharacterTextSplitter(
+        text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+            encoding_name="cl100k_base",
             chunk_size=self.chunk_size,
             chunk_overlap=self.chunk_overlap,
             separators=["\n\n", "\n", ". ", "? ", " ", ""]
@@ -115,7 +118,7 @@ class PdfRagService:
 
         self.retriever = EnsembleRetriever(
             retrievers=[bm25_retriever, vectorstore_retriever], 
-            weights=[0.3, 0.7])
+            weights=[0.2, 0.8])
         
         logging.info(f"Created ensemble retriever.")
         return self.retriever

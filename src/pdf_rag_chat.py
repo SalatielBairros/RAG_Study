@@ -19,7 +19,7 @@ class PdfRagChatAgent:
 
         if(model is None):
             self.model = ChatGoogleGenerativeAI(
-                model="models/gemini-2.5-flash",
+                model="models/gemini-3.1-flash-lite",
                 temperature=temperature
             )
 
